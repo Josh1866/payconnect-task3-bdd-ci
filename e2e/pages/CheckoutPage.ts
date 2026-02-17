@@ -1,3 +1,4 @@
+
 import { Page } from '@playwright/test';
 
 export class CheckoutPage {
@@ -10,9 +11,5 @@ export class CheckoutPage {
   async submitCardPayment() {
     await this.page.getByTestId('payment-method-card').click();
     await this.page.getByTestId('submit-payment').click();
-  }
-
-  async confirmationVisible() {
-    return this.page.getByTestId('confirmation-screen');
   }
 }

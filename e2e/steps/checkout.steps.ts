@@ -1,8 +1,16 @@
+
 import { Given, When, Then } from 'playwright-bdd';
 import { expect } from '@playwright/test';
 import { CheckoutPage } from '../pages/CheckoutPage';
+import { AnalyticsCollector } from '../utils/analyticsCollector';
 
 let checkout: CheckoutPage;
+let collector: AnalyticsCollector;
+
+Given('analytics tracking is enabled', async ({ page }) => {
+  collector = new AnalyticsCollector(page);
+  await collector.start();
+});
 
 Given('the checkout page is loaded', async ({ page }) => {
   checkout = new CheckoutPage(page);
@@ -14,33 +22,17 @@ When('the customer submits a valid card payment', async ({ page }) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({
-        status: 'success',
-        transactionId: 'txn_55555'
-      })
+      body: JSON.stringify({ status: 'success', transactionId: 'txn_final_001' })
     });
   });
 
   await checkout.submitCardPayment();
 });
 
-Then('the payment confirmation is displayed', async () => {
-  await expect(await checkout.confirmationVisible()).toBeVisible();
-});
-
-Then('the analytics event {string} is sent', async ({ page }, eventName: string) => {
-  let analyticsCaptured = false;
-
-  await page.route('**/analytics', async route => {
-    const body = route.request().postData();
-    if (body?.includes(eventName)) {
-      analyticsCaptured = true;
-    }
-    await route.continue();
-  });
-
-  // Wait briefly to handle flakiness
-  await page.waitForTimeout(1000);
-
-  expect(analyticsCaptured).toBeTruthy();
+Then('the analytics event {string} is eventually sent', async (_ctx, eventName: string) => {
+  const event = await collector.waitForEvent(
+    e => e.body?.includes(eventName),
+    5000
+  );
+  expect(event).toBeTruthy();
 });

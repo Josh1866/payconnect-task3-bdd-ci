@@ -1,22 +1,21 @@
-# PayConnect - Task 3 (BDD + CI)
 
-## Overview
-Implements a BDD scenario using Playwright-BDD with proper Gherkin step bindings.
-Includes GitHub Actions CI pipeline.
+# PayConnect - Task 3 FINAL (BDD + Robust Analytics + Retry + Flake Detection)
 
-## Setup
+## Includes:
+- Playwright-BDD (proper Gherkin binding)
+- Page Object Model
+- Payment API mocking
+- Robust AnalyticsCollector (out-of-order safe)
+- Environment-aware retry strategy
+- Flake detection reporter
+- GitHub Actions CI with artifact upload
 
-1. Install dependencies:
-   npm install
+## Retry Strategy
+- Local: 1 retry
+- CI: 2 retries
+- Flaky tests logged automatically
 
-2. Install Playwright browsers:
-   npx playwright install
-
-3. Serve checkout.html locally (example):
-   npx http-server .
-
-4. Run BDD tests:
-   npx playwright test
-
-## CI
-GitHub Actions runs tests automatically on push.
+## Run Locally
+npm install
+npx playwright install
+npx playwright test
